@@ -58,7 +58,13 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
         }
 
         const fetchUrl = `${appScriptUrl}?idDueno=${encodeURIComponent(idDueno.trim())}`;
-        const response = await fetch(fetchUrl);
+        const response = await fetch(fetchUrl, {
+          method: "GET",
+          mode: "cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          }
+        });
         if (!response.ok) {
           throw new Error(`Error de conexión al servidor: ${response.statusText}`);
         }
@@ -104,7 +110,13 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
         }
 
         const fetchUrl = `${appScriptUrl}?placa=${encodeURIComponent(car.placa)}&tipoCertificado=${tipo}`;
-        const response = await fetch(fetchUrl);
+        const response = await fetch(fetchUrl, {
+          method: "GET",
+          mode: "cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          }
+        });
         if (!response.ok) {
           throw new Error("Error en la conexión de red.");
         }
