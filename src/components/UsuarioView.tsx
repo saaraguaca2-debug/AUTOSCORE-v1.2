@@ -30,6 +30,8 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
   const [historial, setHistorial] = useState<HistorialRow[]>([]);
   const [loadingCert, setLoadingCert] = useState(false);
 
+  const isVencido = selectedCar ? (selectedCar.estadoCertificado || "Activo").toLowerCase() !== "activo" : false;
+
   // 1. LOGIN / INGRESO AL GARAJE VIRTUAL
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -587,15 +589,47 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
               </div>
             </div>
 
+            {isVencido && (
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-left flex gap-3 items-start animate-fade-in">
+                <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5 animate-pulse" />
+                <div className="space-y-1">
+                  <h5 className="text-xs font-bold text-red-400 uppercase tracking-wider">Certificado Vencido</h5>
+                  <p className="text-[11px] text-slate-300 leading-normal">
+                    Este certificado ya no tiene validez legal ni comercial activa. Las descargas en formato PDF y la visualización del historial técnico verificado han sido inhabilitadas por seguridad. Por favor, solicite una renovación del certificado.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* ---------------- LÍNEA DE TIEMPO (SOLO CERTIFICADO COMPLETO) ---------------- */}
             {activeCertType === "completo" && (
               <div className="mt-8">
                 <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-amber-500/90 mb-4 flex items-center gap-1.5">
                   <ClipboardList className="w-4 h-4" />
-                  Línea de Tiempo Verificada ({historial.length})
+                  Línea de Tiempo Verificada ({isVencido ? 0 : historial.length})
                 </h4>
 
-                {loadingCert ? (
+                {isVencido ? (
+                  <div className="p-5 bg-red-500/5 border border-red-500/20 rounded-2xl text-center">
+                    <div className="inline-flex p-2.5 rounded-xl bg-red-500/10 text-red-400 mb-3 border border-red-500/20">
+                      <Lock className="w-5 h-5" />
+                    </div>
+                    <p className="text-xs text-red-400 font-bold uppercase tracking-wider">Historial Bloqueado</p>
+                    <p className="text-[11px] text-slate-400 mt-2 leading-relaxed max-w-sm mx-auto">
+                      La línea de tiempo detallada de reparaciones y mantenimiento está bloqueada porque el certificado de este vehículo ha expirado.
+                    </p>
+                    <a
+                      href={`https://wa.me/584120000000?text=${encodeURIComponent(
+                        `Hola AutoScore, deseo renovar el certificado digital de mi vehículo placa ${selectedCar?.placa} para actualizar mi Score Mecánico y habilitar el historial de reparaciones.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 bg-red-500 hover:bg-red-400 text-white font-extrabold text-[11px] py-2 px-4 rounded-xl shadow-lg transition-all"
+                    >
+                      Renovar Certificado Ahora
+                    </a>
+                  </div>
+                ) : loadingCert ? (
                   <div className="text-center py-6 text-slate-500 text-xs flex items-center justify-center gap-2">
                     <RefreshCw className="w-4 h-4 animate-spin text-amber-500" />
                     <span>Recuperando registros...</span>
@@ -655,26 +689,35 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
                 <p className="text-[10px] text-slate-600 mt-1 leading-normal max-w-xs mx-auto">
                   La versión simple certifica únicamente la autenticidad técnica y el score total. Solicita el Certificado Completo VIP si necesitas inspeccionar la línea de tiempo.
                 </p>
-                <button
-                  onClick={() => handleVerCertificado(selectedCar, "completo")}
-                  className="mt-3 inline-flex items-center gap-1 text-[11px] text-amber-400 hover:text-amber-300 font-semibold underline"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Emitir Certificado Completo VIP
-                </button>
+                {!isVencido && (
+                  <button
+                    onClick={() => handleVerCertificado(selectedCar, "completo")}
+                    className="mt-3 inline-flex items-center gap-1 text-[11px] text-amber-400 hover:text-amber-300 font-semibold underline"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Emitir Certificado Completo VIP
+                  </button>
+                )}
               </div>
             )}
           </div>
 
           {/* Botón Descargar PDF */}
-          <button
-            onClick={() => window.print()}
-            className="w-full bg-gradient-to-br from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-extrabold py-4 px-6 rounded-2xl shadow-xl hover:shadow-amber-500/20 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 no-print"
-            id="btn-download-pdf"
-          >
-            <Download className="w-5 h-5 shrink-0 text-slate-950" />
-            Descargar Certificado Oficial (PDF)
-          </button>
+          {isVencido ? (
+            <div className="w-full bg-slate-900/50 border border-red-500/20 text-red-400 p-4 rounded-2xl text-center flex items-center justify-center gap-2 no-print">
+              <Lock className="w-5 h-5 shrink-0 text-red-500/70" />
+              <span className="text-xs font-bold uppercase tracking-wider">Descarga Deshabilitada: Certificado Vencido</span>
+            </div>
+          ) : (
+            <button
+              onClick={() => window.print()}
+              className="w-full bg-gradient-to-br from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-extrabold py-4 px-6 rounded-2xl shadow-xl hover:shadow-amber-500/20 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 no-print"
+              id="btn-download-pdf"
+            >
+              <Download className="w-5 h-5 shrink-0 text-slate-950" />
+              Descargar Certificado Oficial (PDF)
+            </button>
+          )}
         </div>
       )}
     </div>
