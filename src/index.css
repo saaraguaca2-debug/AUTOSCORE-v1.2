@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Premium AutoScore color custom definitions */
+  --color-gold-50: #fefdf0;
+  --color-gold-100: #fef9c3;
+  --color-gold-400: #facc15;
+  --color-gold-500: #eab308;
+  --color-gold-600: #ca8a04;
+  --color-gold-700: #a16207;
+  --color-gold-800: #854d0e;
+}
+
+/* Animaciones de resplandor para certificados VIP */
+@keyframes gold-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(234, 179, 8, 0.45);
+    border-color: rgba(254, 240, 138, 0.8);
+  }
+}
+
+@keyframes silver-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(156, 163, 175, 0.1);
+    border-color: rgba(156, 163, 175, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(156, 163, 175, 0.35);
+    border-color: rgba(243, 244, 246, 0.7);
+  }
+}
+
+.glow-gold {
+  animation: gold-glow-pulse 4s infinite ease-in-out;
+}
+
+.glow-silver {
+  animation: silver-glow-pulse 4s infinite ease-in-out;
+}
+
+/* Estilo global táctil optimizado para móvil y estética Frosted Glass */
+body {
+  background-color: #050505;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 40%);
+  color: #f1f5f9;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism premium panels */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem; /* rounded-3xl */
+}
+
+.glass-panel-vip {
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(217, 119, 6, 0.4);
+  box-shadow: 0 0 40px rgba(217, 119, 6, 0.15);
+  border-radius: 1.5rem;
+}
+
+/* Glass inputs */
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+  outline: none;
+}
+
+/* Glass buttons */
+.glass-btn-gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  color: #000000;
+  font-weight: 800;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.25);
+  transition: all 0.2s ease;
+}
+.glass-btn-gold:hover {
+  background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
+  box-shadow: 0 4px 20px rgba(217, 119, 6, 0.4);
+}
+
+.glass-btn-dark {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  transition: all 0.2s ease;
+}
+.glass-btn-dark:hover {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Ocultar barra de desplazamiento para estética impecable */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Estilos para impresión limpia (Guardar como PDF) */
+@media print {
+  /* Ocultar elementos que no deben ir en el PDF */
+  .no-print,
+  #btn-cert-back,
+  #btn-download-pdf,
+  header,
+  nav,
+  iframe,
+  footer,
+  button,
+  .fixed,
+  #btn-portal-usuario,
+  #btn-portal-mecanico,
+  .inline-flex.mt-2.bg-white\/5 {
+    display: none !important;
+  }
+
+  /* Resetear fondos oscuros a claro para impresión y ahorro de tinta */
+  body, html, #root, main {
+    background: #ffffff !important;
+    color: #000000 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* El chasis del teléfono debe desaparecer en la impresión */
+  .w-full.max-w-md {
+    max-width: 100% !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  /* Tarjeta de Certificado */
+  .glass-panel,
+  .glass-panel-vip {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    margin: 0 !important;
+  }
+
+  /* Textos de alta legibilidad para impresión */
+  .text-white, h3.text-white, h4.text-white, span.text-white, .text-slate-200 {
+    color: #0f172a !important;
+  }
+  .text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600 {
+    color: #334155 !important;
+  }
+
+  /* Bloques internos del certificado */
+  .bg-black\/40, .bg-black\/30 {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+
+  .bg-amber-400\/10, .bg-amber-500\/10 {
+    background: #fef9c3 !important;
+    color: #854d0e !important;
+    border-color: #fef08a !important;
+  }
+
+  /* Forzar la visualización de colores e imágenes de fondo en navegadores modernos */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+

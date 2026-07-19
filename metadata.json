@@ -1,0 +1,6 @@
+{
+  "name": "AutoScore",
+  "description": "Sistema de historial verificado y calificación de vehículos usados con integración de Google Sheets.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
