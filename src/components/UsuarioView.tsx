@@ -76,7 +76,23 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
         setLoading(false);
       }
     } catch (err: any) {
-      setError(err.message || "Error al conectar con la base de datos de Google Sheets.");
+      const errorMsg = err.message || "";
+      if (
+        errorMsg.includes("Failed to fetch") || 
+        errorMsg.includes("fetch") || 
+        errorMsg.includes("Unexpected token") || 
+        err instanceof TypeError
+      ) {
+        setError(
+          "⚠️ ERROR DE CONEXIÓN CON GOOGLE SHEETS: Tu Google Apps Script no está permitiendo la conexión externa del navegador (CORS). Sigue estos 3 pasos obligatorios:\n\n" +
+          "1. En el editor de Apps Script, dale clic arriba a 'Implementar' > 'Nueva implementación'.\n" +
+          "2. En 'Tipo', elige 'Aplicación web'. Configura 'Ejecutar como: Yo' y 'Quién tiene acceso: Cualquier persona' (Anyone).\n" +
+          "3. Haz clic en 'Implementar', autoriza los permisos y COPIA la URL que termina en '/exec'.\n\n" +
+          "Nota: Si usas la URL de prueba '/dev' o no pusiste 'Cualquier persona', el navegador siempre dará este error."
+        );
+      } else {
+        setError(err.message || "Error al conectar con la base de datos de Google Sheets.");
+      }
       setLoading(false);
     }
   };
@@ -125,7 +141,23 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
         setLoadingCert(false);
       }
     } catch (err: any) {
-      setError(err.message || "Fallo la comunicación con Google Sheets.");
+      const errorMsg = err.message || "";
+      if (
+        errorMsg.includes("Failed to fetch") || 
+        errorMsg.includes("fetch") || 
+        errorMsg.includes("Unexpected token") || 
+        err instanceof TypeError
+      ) {
+        setError(
+          "⚠️ ERROR DE CONEXIÓN CON GOOGLE SHEETS: Tu Google Apps Script no está permitiendo la conexión externa del navegador (CORS). Sigue estos 3 pasos obligatorios:\n\n" +
+          "1. En el editor de Apps Script, dale clic arriba a 'Implementar' > 'Nueva implementación'.\n" +
+          "2. En 'Tipo', elige 'Aplicación web'. Configura 'Ejecutar como: Yo' y 'Quién tiene acceso: Cualquier persona' (Anyone).\n" +
+          "3. Haz clic en 'Implementar', autoriza los permisos y COPIA la URL que termina en '/exec'.\n\n" +
+          "Nota: Si usas la URL de prueba '/dev' o no pusiste 'Cualquier persona', el navegador siempre dará este error."
+        );
+      } else {
+        setError(err.message || "Fallo la comunicación con Google Sheets.");
+      }
       setLoadingCert(false);
     }
   };

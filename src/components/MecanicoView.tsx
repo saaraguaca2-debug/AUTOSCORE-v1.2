@@ -267,7 +267,23 @@ export default function MecanicoView({ useSimulado, appScriptUrl }: MecanicoView
         setIsSubmitting(false);
       }
     } catch (err: any) {
-      setFormError(err.message || "Fallo de conexión al enviar el formulario a Google Sheets.");
+      const errorMsg = err.message || "";
+      if (
+        errorMsg.includes("Failed to fetch") || 
+        errorMsg.includes("fetch") || 
+        errorMsg.includes("Unexpected token") || 
+        err instanceof TypeError
+      ) {
+        setFormError(
+          "⚠️ ERROR DE CONEXIÓN CON GOOGLE SHEETS: Tu Google Apps Script no está permitiendo la conexión externa del navegador (CORS). Sigue estos 3 pasos obligatorios:\n\n" +
+          "1. En el editor de Apps Script, dale clic arriba a 'Implementar' > 'Nueva implementación'.\n" +
+          "2. En 'Tipo', elige 'Aplicación web'. Configura 'Ejecutar como: Yo' y 'Quién tiene acceso: Cualquier persona' (Anyone).\n" +
+          "3. Haz clic en 'Implementar', autoriza los permisos y COPIA la URL que termina en '/exec'.\n\n" +
+          "Nota: Si usas la URL de prueba '/dev' o no pusiste 'Cualquier persona', el navegador siempre dará este error."
+        );
+      } else {
+        setFormError(err.message || "Fallo de conexión al enviar el formulario a Google Sheets.");
+      }
       setIsSubmitting(false);
     }
   };
