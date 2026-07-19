@@ -342,13 +342,13 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
 
                   <div className="mb-4">
                     <span className="text-[10px] font-mono font-bold text-slate-500 block">
-                      {car.marca.toUpperCase()}
+                      {(car.marca || "Marca Desconocida").toUpperCase()}
                     </span>
                     <h3 className="text-lg font-display font-extrabold text-white">
-                      {car.modelo} <span className="text-slate-400 font-light text-sm">({car.anio})</span>
+                      {car.modelo || "Modelo Desconocido"} <span className="text-slate-400 font-light text-sm">({car.anio || "N/A"})</span>
                     </h3>
                     <div className="inline-flex mt-2 bg-black/40 border border-white/10 font-mono text-xs font-bold tracking-widest px-3 py-1 rounded text-slate-300">
-                      {car.placa}
+                      {car.placa || "S/P"}
                     </div>
                   </div>
 
@@ -410,7 +410,7 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
           </button>
 
           <div className="text-center mb-6">
-            <span className="text-xs text-amber-500 font-mono tracking-wider block">{selectedCar.marca} {selectedCar.modelo}</span>
+            <span className="text-xs text-amber-500 font-mono tracking-wider block">{(selectedCar?.marca || "Vehículo").toUpperCase()} {selectedCar?.modelo || ""}</span>
             <h3 className="text-lg font-display font-bold text-white mt-0.5">Opciones de Certificado</h3>
             <p className="text-xs text-slate-400 mt-1">Selecciona la versión del certificado que deseas emitir en pantalla.</p>
           </div>
@@ -545,19 +545,19 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
               <div className="text-center sm:text-left">
                 <span className="text-[10px] text-slate-500 font-mono font-medium block">VEHÍCULO HOMOLOGADO</span>
                 <h3 className="text-xl font-display font-extrabold text-white mt-0.5 leading-tight">
-                  {selectedCar.marca} {selectedCar.modelo}
+                  {selectedCar?.marca || "N/A"} {selectedCar?.modelo || ""}
                 </h3>
-                <span className="text-xs text-slate-400 font-light block">Año fabricación: {selectedCar.anio}</span>
+                <span className="text-xs text-slate-400 font-light block">Año fabricación: {selectedCar?.anio || "N/A"}</span>
                 <div className="inline-block mt-2 bg-white/5 border border-white/10 text-xs font-mono font-bold px-3 py-0.5 rounded text-slate-300 tracking-wider">
-                  PLACA: {selectedCar.placa}
+                  PLACA: {selectedCar?.placa || "N/A"}
                 </div>
               </div>
 
               {/* Score Circular / Caja */}
               <div className="flex flex-col items-center">
-                <div className={`w-32 h-32 rounded-full border-4 border-amber-600/20 flex flex-col items-center justify-center p-1 font-display relative ${getScoreColor(selectedCar.score)}`}>
+                <div className={`w-32 h-32 rounded-full border-4 border-amber-600/20 flex flex-col items-center justify-center p-1 font-display relative ${getScoreColor(selectedCar?.score || 0)}`}>
                   <div className="absolute inset-0 border-4 border-amber-500 rounded-full border-t-transparent animate-spin-slow opacity-30"></div>
-                  <span className="text-4xl font-black text-white leading-none">{selectedCar.score}</span>
+                  <span className="text-4xl font-black text-white leading-none">{selectedCar?.score ?? 0}</span>
                   <span className="text-[10px] uppercase tracking-widest font-bold opacity-75 mt-1">SCORE</span>
                 </div>
                 <span className="text-[9px] text-slate-400 font-mono mt-1.5 uppercase tracking-widest font-semibold">CALIFICACIÓN MECÁNICA</span>
@@ -569,16 +569,16 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
               <div>
                 <span className="text-slate-500 font-mono block">Estatus Certificado</span>
                 <span className={`font-semibold inline-flex items-center gap-1 mt-0.5 ${
-                  selectedCar.estadoCertificado === "Activo" ? "text-emerald-400" : "text-red-400"
+                  selectedCar?.estadoCertificado === "Activo" ? "text-emerald-400" : "text-red-400"
                 }`}>
                   <Award className="w-3.5 h-3.5" />
-                  {selectedCar.estadoCertificado}
+                  {selectedCar?.estadoCertificado || "N/A"}
                 </span>
               </div>
               <div>
                 <span className="text-slate-500 font-mono block">ID Dueño Vinculado</span>
                 <span className="font-semibold text-slate-200 mt-0.5 block truncate">
-                  {selectedCar.idDueno}
+                  {selectedCar?.idDueno || "N/A"}
                 </span>
               </div>
             </div>
@@ -618,7 +618,7 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
                             </span>
                             <span className="text-[10px] text-amber-400 font-mono font-semibold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 flex items-center gap-1 w-fit">
                               <Gauge className="w-3 h-3" />
-                              {row.kilometraje.toLocaleString()} km
+                              {(row.kilometraje ?? 0).toLocaleString()} km
                             </span>
                           </div>
 
