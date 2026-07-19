@@ -23,6 +23,9 @@ export interface HistorialRow {
   codigoMecanico: string;
   taller: string;
   trabajoRealizado: string;
+  telefono?: string;
+  nombreMecanico?: string;
+  nombreTaller?: string;
 }
 
 export type VistaActual = "home" | "usuario" | "mecanico" | "documentacion";

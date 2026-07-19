@@ -171,6 +171,19 @@ export function simularGetCertificado(placa: string, tipoCertificado: string) {
     // Buscar historial de mantenimientos para esta placa
     const mantenimientos = data.historial
       .filter(h => h.placa.trim().toUpperCase() === searchPlaca)
+      .map(h => {
+        const mec = data.mecanicos.find(m => m.codigoMecanico === h.codigoMecanico);
+        let phone = "";
+        if (h.codigoMecanico === "M101") phone = "584121111111";
+        else if (h.codigoMecanico === "M202") phone = "584122222222";
+        else if (h.codigoMecanico === "M303") phone = "584123333333";
+        else phone = "584120000000";
+        return {
+          ...h,
+          nombreMecanico: mec ? mec.nombre : "Técnico Especialista AutoScore",
+          telefono: phone
+        };
+      })
       .sort((a, b) => b.kilometraje - a.kilometraje);
     
     respuesta.historial = mantenimientos;
