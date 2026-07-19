@@ -67,11 +67,13 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
         }
 
         const result = await response.json();
-        if (result.success) {
-          setVehiculos(result.data || []);
+        if (result && result.success) {
+          const validVehiculos = Array.isArray(result.data) ? result.data : [];
+          setVehiculos(validVehiculos);
           setLoggedDueno(idDueno.trim());
         } else {
-          setError(result.error || "No se encontraron vehículos.");
+          setVehiculos([]);
+          setError((result && result.error) || "No se encontraron vehículos.");
         }
         setLoading(false);
       }
@@ -132,11 +134,11 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
         }
 
         const result = await response.json();
-        if (result.success) {
-          setSelectedCar(result.vehiculo);
-          setHistorial(result.historial || []);
+        if (result && result.success) {
+          setSelectedCar(result.vehiculo || null);
+          setHistorial(Array.isArray(result.historial) ? result.historial : []);
         } else {
-          setError(result.error || "No se encontró el certificado solicitado.");
+          setError((result && result.error) || "No se encontró el certificado solicitado.");
         }
         setLoadingCert(false);
       }

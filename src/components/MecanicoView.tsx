@@ -252,7 +252,7 @@ export default function MecanicoView({ useSimulado, appScriptUrl }: MecanicoView
         }
 
         const result = await response.json();
-        if (result.success) {
+        if (result && result.success) {
           setFormSuccess(result.data || {
             placa: cleanPlaca,
             fecha: new Date().toLocaleDateString(),
@@ -262,7 +262,7 @@ export default function MecanicoView({ useSimulado, appScriptUrl }: MecanicoView
           setKilometraje("");
           setTrabajo("");
         } else {
-          setFormError(result.error || "El servidor rechazó la firma de mantenimiento.");
+          setFormError((result && result.error) || "El servidor rechazó la firma de mantenimiento.");
         }
         setIsSubmitting(false);
       }
