@@ -137,10 +137,10 @@ export function saveSimulatedData(data: { mecanicos: Mecanico[]; vehiculos: Vehi
 // Buscar por idDueno
 export function simularGetPorDueno(idDueno: string) {
   const data = getSimulatedData();
-  const searchId = idDueno.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  const searchId = idDueno.trim().toLowerCase();
   
   const filtrados = data.vehiculos.filter(
-    v => v.idDueno.trim().toLowerCase().replace(/[^a-z0-9]/g, "") === searchId
+    v => v.idDueno.trim().toLowerCase() === searchId
   );
   
   return {

@@ -11,10 +11,7 @@
 // Cabeceras CORS obligatorias para peticiones desde el navegador
 function getCorsResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 // Manejar solicitudes OPTIONS (Preflight CORS)
@@ -75,7 +72,7 @@ function doGet(e) {
     
     // CASO 1: Consulta por ID de Dueño (Cédula o Correo)
     if (params.idDueno) {
-      const idDueno = params.idDueno.toString().trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+      const idDueno = params.idDueno.toString().trim().toLowerCase();
       const sheetVehiculos = sheetApp.getSheetByName("Vehiculos");
       
       if (!sheetVehiculos) {
@@ -90,7 +87,7 @@ function doGet(e) {
       
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const rowIdDueno = getRowValue(row, headers, "IdDueno").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const rowIdDueno = getRowValue(row, headers, "IdDueno").toLowerCase();
         
         if (rowIdDueno === idDueno) {
           misVehiculos.push({
