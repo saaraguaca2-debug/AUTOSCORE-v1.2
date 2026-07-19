@@ -237,12 +237,12 @@ export default function MecanicoView({ useSimulado, appScriptUrl }: MecanicoView
           throw new Error("La URL de Google Apps Script no está configurada.");
         }
 
-        // Petición real vía fetch configurada con CORS
+        // Petición real vía fetch configurada con CORS simple para evitar preflight
         const response = await fetch(appScriptUrl, {
           method: "POST",
           mode: "cors",
           headers: {
-            "Content-Type": "text/plain;charset=utf-8" // Requerido por Apps Script doPost para evitar preflights molestos
+            "Content-Type": "text/plain"
           },
           body: JSON.stringify(payload)
         });
