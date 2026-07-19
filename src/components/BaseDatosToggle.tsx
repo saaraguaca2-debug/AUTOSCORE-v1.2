@@ -53,7 +53,7 @@ export default function BaseDatosToggle({
               id="btn-simulado"
             >
               <Database className="w-3.5 h-3.5" />
-              Simulador
+              <span>Simulador</span>
             </button>
             <button
               onClick={() => {
@@ -74,7 +74,7 @@ export default function BaseDatosToggle({
               ) : (
                 <WifiOff className="w-3.5 h-3.5 text-slate-500" />
               )}
-              Sheets Live
+              <span>Sheets Live</span>
             </button>
           </div>
 
@@ -118,8 +118,8 @@ export default function BaseDatosToggle({
                 className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-1 shrink-0"
                 id="btn-save-settings"
               >
-                {saveSuccess ? <Check className="w-3.5 h-3.5" /> : null}
-                {saveSuccess ? "Guardado" : "Guardar URL"}
+                {saveSuccess && <Check className="w-3.5 h-3.5" />}
+                <span>{saveSuccess ? "Guardado" : "Guardar URL"}</span>
               </button>
             </div>
             <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1">

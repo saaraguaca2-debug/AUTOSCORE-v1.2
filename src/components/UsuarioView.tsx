@@ -606,7 +606,7 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
               <div className="mt-8">
                 <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-amber-500/90 mb-4 flex items-center gap-1.5">
                   <ClipboardList className="w-4 h-4" />
-                  Línea de Tiempo Verificada ({isVencido ? 0 : historial.length})
+                  <span>Línea de Tiempo Verificada ({isVencido ? 0 : historial.length})</span>
                 </h4>
 
                 {isVencido ? (
@@ -695,7 +695,7 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
                     className="mt-3 inline-flex items-center gap-1 text-[11px] text-amber-400 hover:text-amber-300 font-semibold underline"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    Emitir Certificado Completo VIP
+                    <span>Emitir Certificado Completo VIP</span>
                   </button>
                 )}
               </div>
@@ -715,7 +715,7 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
               id="btn-download-pdf"
             >
               <Download className="w-5 h-5 shrink-0 text-slate-950" />
-              Descargar Certificado Oficial (PDF)
+              <span>Descargar Certificado Oficial (PDF)</span>
             </button>
           )}
         </div>
