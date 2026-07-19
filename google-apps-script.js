@@ -23,13 +23,55 @@ function doOptions(e) {
 }
 
 /**
+ * Función helper para buscar el índice de una columna por nombre.
+ * Es tolerante a mayúsculas/minúsculas, espacios, tildes (ej. Año/Anio, Dueño/Dueno).
+ */
+function findColumnIndex(headers, columnName) {
+  if (!headers || !Array.isArray(headers)) return -1;
+  const cleanName = columnName.toString().trim().toLowerCase()
+    .replace(/[áäâà]/g, "a")
+    .replace(/[éëêè]/g, "e")
+    .replace(/[íïîì]/g, "i")
+    .replace(/[óöôò]/g, "o")
+    .replace(/[úüûù]/g, "u")
+    .replace(/ñ/g, "n")
+    .replace(/[^a-z0-9]/g, "");
+
+  for (let i = 0; i < headers.length; i++) {
+    if (headers[i] === undefined || headers[i] === null) continue;
+    const cleanHeader = headers[i].toString().trim().toLowerCase()
+      .replace(/[áäâà]/g, "a")
+      .replace(/[éëêè]/g, "e")
+      .replace(/[íïîì]/g, "i")
+      .replace(/[óöôò]/g, "o")
+      .replace(/[úüûù]/g, "u")
+      .replace(/ñ/g, "n")
+      .replace(/[^a-z0-9]/g, "");
+    if (cleanHeader === cleanName) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Función helper para obtener el valor de una celda de manera segura sin riesgo de TypeError.
+ */
+function getRowValue(row, headers, colName, defaultValue) {
+  const idx = findColumnIndex(headers, colName);
+  if (idx === -1 || idx >= row.length) return defaultValue !== undefined ? defaultValue : "";
+  const val = row[idx];
+  return (val !== undefined && val !== null) ? val.toString().trim() : (defaultValue !== undefined ? defaultValue : "");
+}
+
+/**
  * MÉTODO GET: Consulta de información
  * Soporta buscar por '?idDueno=...' o por '?placa=...&tipoCertificado=...'
  */
 function doGet(e) {
   try {
     const sheetApp = SpreadsheetApp.getActiveSpreadsheet();
-    const params = e.parameter;
+    const params = e.parameter || {};
     
     // CASO 1: Consulta por ID de Dueño (Cédula o Correo)
     if (params.idDueno) {
@@ -37,33 +79,27 @@ function doGet(e) {
       const sheetVehiculos = sheetApp.getSheetByName("Vehiculos");
       
       if (!sheetVehiculos) {
-        return getCorsResponse({ success: false, error: "Pestaña 'Vehiculos' no encontrada" });
+        return getCorsResponse({ success: false, error: "Pestaña 'Vehiculos' no encontrada en el Google Sheet" });
       }
       
       const data = sheetVehiculos.getDataRange().getValues();
       const headers = data[0];
       const rows = data.slice(1);
       
-      const colPlaca = headers.indexOf("Placa");
-      const colMarca = headers.indexOf("Marca");
-      const colModelo = headers.indexOf("Modelo");
-      const colAnio = headers.indexOf("Anio");
-      const colIdDueno = headers.indexOf("IdDueno");
-      const colScore = headers.indexOf("Score");
-      const colEstado = headers.indexOf("EstadoCertificado");
-      
       const misVehiculos = [];
       
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        if (row[colIdDueno] && row[colIdDueno].toString().trim().toLowerCase() === idDueno) {
+        const rowIdDueno = getRowValue(row, headers, "IdDueno").toLowerCase();
+        
+        if (rowIdDueno === idDueno) {
           misVehiculos.push({
-            placa: row[colPlaca],
-            marca: row[colMarca],
-            modelo: row[colModelo],
-            anio: row[colAnio],
-            score: Number(row[colScore] || 0),
-            estadoCertificado: row[colEstado] || "Activo"
+            placa: getRowValue(row, headers, "Placa"),
+            marca: getRowValue(row, headers, "Marca"),
+            modelo: getRowValue(row, headers, "Modelo"),
+            anio: getRowValue(row, headers, "Anio"),
+            score: Number(getRowValue(row, headers, "Score", "0")),
+            estadoCertificado: getRowValue(row, headers, "EstadoCertificado", "Activo")
           });
         }
       }
@@ -78,39 +114,33 @@ function doGet(e) {
       
       const sheetVehiculos = sheetApp.getSheetByName("Vehiculos");
       if (!sheetVehiculos) {
-        return getCorsResponse({ success: false, error: "Pestaña 'Vehiculos' no encontrada" });
+        return getCorsResponse({ success: false, error: "Pestaña 'Vehiculos' no encontrada en el Google Sheet" });
       }
       
       const vehiculosData = sheetVehiculos.getDataRange().getValues();
       const headersV = vehiculosData[0];
       const rowsV = vehiculosData.slice(1);
       
-      const colPlaca = headersV.indexOf("Placa");
-      const colMarca = headersV.indexOf("Marca");
-      const colModelo = headersV.indexOf("Modelo");
-      const colAnio = headersV.indexOf("Anio");
-      const colScore = headersV.indexOf("Score");
-      const colEstado = headersV.indexOf("EstadoCertificado");
-      const colIdDueno = headersV.indexOf("IdDueno");
-      
       let vehiculo = null;
       for (let i = 0; i < rowsV.length; i++) {
-        if (rowsV[i][colPlaca].toString().trim().toUpperCase() === placa) {
+        const row = rowsV[i];
+        const rowPlaca = getRowValue(row, headersV, "Placa").toUpperCase();
+        if (rowPlaca === placa) {
           vehiculo = {
-            placa: rowsV[i][colPlaca],
-            marca: rowsV[i][colMarca],
-            modelo: rowsV[i][colModelo],
-            anio: rowsV[i][colAnio],
-            score: Number(rowsV[i][colScore] || 0),
-            estadoCertificado: rowsV[i][colEstado] || "Activo",
-            idDueno: rowsV[i][colIdDueno]
+            placa: getRowValue(row, headersV, "Placa"),
+            marca: getRowValue(row, headersV, "Marca"),
+            modelo: getRowValue(row, headersV, "Modelo"),
+            anio: getRowValue(row, headersV, "Anio"),
+            score: Number(getRowValue(row, headersV, "Score", "0")),
+            estadoCertificado: getRowValue(row, headersV, "EstadoCertificado", "Activo"),
+            idDueno: getRowValue(row, headersV, "IdDueno")
           };
           break;
         }
       }
       
       if (!vehiculo) {
-        return getCorsResponse({ success: false, error: "Vehículo no registrado en AutoScore" });
+        return getCorsResponse({ success: false, error: "Vehículo no registrado en AutoScore con la placa: " + placa });
       }
       
       // Estructurar respuesta base (Certificado Simple)
@@ -128,29 +158,23 @@ function doGet(e) {
           const headersH = historialData[0];
           const rowsH = historialData.slice(1);
           
-          const hPlaca = headersH.indexOf("Placa");
-          const hId = headersH.indexOf("IdHistorial");
-          const hFecha = headersH.indexOf("Fecha");
-          const hKm = headersH.indexOf("Kilometraje");
-          const hCodMec = headersH.indexOf("CodigoMecanico");
-          const hTaller = headersH.indexOf("Taller");
-          const hTrabajo = headersH.indexOf("TrabajoRealizado");
-          
           const timeline = [];
           for (let j = 0; j < rowsH.length; j++) {
-            if (rowsH[j][hPlaca].toString().trim().toUpperCase() === placa) {
+            const rowH = rowsH[j];
+            const rowHPlaca = getRowValue(rowH, headersH, "Placa").toUpperCase();
+            if (rowHPlaca === placa) {
               timeline.push({
-                idHistorial: rowsH[j][hId],
-                fecha: rowsH[j][hFecha],
-                kilometraje: Number(rowsH[j][hKm] || 0),
-                codigoMecanico: rowsH[j][hCodMec],
-                taller: rowsH[j][hTaller] || "Taller Independiente",
-                trabajoRealizado: rowsH[j][hTrabajo]
+                idHistorial: getRowValue(rowH, headersH, "IdHistorial"),
+                fecha: getRowValue(rowH, headersH, "Fecha"),
+                kilometraje: Number(getRowValue(rowH, headersH, "Kilometraje", "0")),
+                codigoMecanico: getRowValue(rowH, headersH, "CodigoMecanico"),
+                taller: getRowValue(rowH, headersH, "Taller", "Taller Independiente"),
+                trabajoRealizado: getRowValue(rowH, headersH, "TrabajoRealizado")
               });
             }
           }
           
-          // Ordenar el historial por kilometraje o fecha (más reciente primero)
+          // Ordenar el historial por kilometraje (más reciente primero)
           timeline.sort((a, b) => b.kilometraje - a.kilometraje);
           respuesta.historial = timeline;
         } else {
@@ -181,7 +205,7 @@ function doPost(e) {
     if (e.postData && e.postData.contents) {
       payload = JSON.parse(e.postData.contents);
     } else {
-      payload = e.parameter;
+      payload = e.parameter || {};
     }
     
     const codigoMecanico = (payload.codigoMecanico || payload.codMec || "").toString().trim();
@@ -206,19 +230,16 @@ function doPost(e) {
     const headersM = mecData[0];
     const rowsM = mecData.slice(1);
     
-    const colCod = headersM.indexOf("CodigoMecanico");
-    const colNombre = headersM.indexOf("Nombre");
-    const colTaller = headersM.indexOf("Taller");
-    const colEstado = headersM.indexOf("Estado");
-    
     let mecanico = null;
     for (let i = 0; i < rowsM.length; i++) {
-      if (rowsM[i][colCod].toString().trim() === codigoMecanico) {
+      const row = rowsM[i];
+      const rowCod = getRowValue(row, headersM, "CodigoMecanico").trim();
+      if (rowCod === codigoMecanico) {
         mecanico = {
-          codigo: rowsM[i][colCod],
-          nombre: rowsM[i][colNombre],
-          taller: rowsM[i][colTaller],
-          estado: (rowsM[i][colEstado] || "Activo").toString().trim()
+          codigo: rowCod,
+          nombre: getRowValue(row, headersM, "Nombre"),
+          taller: getRowValue(row, headersM, "Taller"),
+          estado: getRowValue(row, headersM, "Estado", "Activo").trim()
         };
         break;
       }
@@ -241,9 +262,13 @@ function doPost(e) {
     let vehiculoExiste = false;
     if (sheetVehiculos) {
       const vehData = sheetVehiculos.getDataRange().getValues();
-      const colPlacaV = vehData[0].indexOf("Placa");
-      for (let k = 1; k < vehData.length; k++) {
-        if (vehData[k][colPlacaV].toString().trim().toUpperCase() === placa) {
+      const headersV = vehData[0];
+      const rowsV = vehData.slice(1);
+      
+      for (let k = 0; k < rowsV.length; k++) {
+        const row = rowsV[k];
+        const rowPlaca = getRowValue(row, headersV, "Placa").toUpperCase();
+        if (rowPlaca === placa) {
           vehiculoExiste = true;
           break;
         }

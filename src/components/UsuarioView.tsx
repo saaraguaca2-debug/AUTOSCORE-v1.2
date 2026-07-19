@@ -324,7 +324,9 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
                 </button>
               </div>
             ) : (
-              vehiculos.map((car) => (
+              (vehiculos || [])
+                .filter((car) => car && typeof car === "object" && car.placa)
+                .map((car) => (
                 <div
                   key={car.placa}
                   className="bg-white/5 border border-white/10 rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-white/20 hover:bg-white/10 transition-all backdrop-blur-sm"
@@ -332,11 +334,11 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
                   {/* Etiqueta de Certificado */}
                   <div className="absolute top-4 right-4 flex items-center gap-1.5">
                     <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                      car.estadoCertificado === "Activo"
+                      (car.estadoCertificado || "Activo") === "Activo"
                         ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                         : "bg-red-500/10 text-red-400 border-red-500/20"
                     }`}>
-                      Cert: {car.estadoCertificado}
+                      Cert: {car.estadoCertificado || "Activo"}
                     </span>
                   </div>
 
