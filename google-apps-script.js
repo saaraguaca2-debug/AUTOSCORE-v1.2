@@ -75,7 +75,7 @@ function doGet(e) {
     
     // CASO 1: Consulta por ID de Dueño (Cédula o Correo)
     if (params.idDueno) {
-      const idDueno = params.idDueno.toString().trim().toLowerCase();
+      const idDueno = params.idDueno.toString().trim().toLowerCase().replace(/[^a-z0-9]/g, "");
       const sheetVehiculos = sheetApp.getSheetByName("Vehiculos");
       
       if (!sheetVehiculos) {
@@ -90,7 +90,7 @@ function doGet(e) {
       
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const rowIdDueno = getRowValue(row, headers, "IdDueno").toLowerCase();
+        const rowIdDueno = getRowValue(row, headers, "IdDueno").toLowerCase().replace(/[^a-z0-9]/g, "");
         
         if (rowIdDueno === idDueno) {
           misVehiculos.push({
