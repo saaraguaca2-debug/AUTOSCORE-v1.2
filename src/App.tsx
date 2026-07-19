@@ -97,18 +97,20 @@ export default function App() {
 
           {/* Vistas dinámicas */}
           <div className="flex-1 flex flex-col py-2">
-            {currentView === "home" && (
-              <InicioView onNavigate={navegarA} useSimulado={useSimulado} />
-            )}
-            {currentView === "usuario" && (
-              <UsuarioView useSimulado={useSimulado} appScriptUrl={appScriptUrl} />
-            )}
-            {currentView === "mecanico" && (
-              <MecanicoView useSimulado={useSimulado} appScriptUrl={appScriptUrl} />
-            )}
-            {currentView === "documentacion" && (
-              <SoporteView onNavigate={navegarA} />
-            )}
+            {(() => {
+              switch (currentView) {
+                case "home":
+                  return <InicioView onNavigate={navegarA} useSimulado={useSimulado} />;
+                case "usuario":
+                  return <UsuarioView useSimulado={useSimulado} appScriptUrl={appScriptUrl} />;
+                case "mecanico":
+                  return <MecanicoView useSimulado={useSimulado} appScriptUrl={appScriptUrl} />;
+                case "documentacion":
+                  return <SoporteView onNavigate={navegarA} />;
+                default:
+                  return null;
+              }
+            })()}
           </div>
 
         </div>
