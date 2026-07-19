@@ -62,7 +62,10 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
         const fetchUrl = `${appScriptUrl}?idDueno=${encodeURIComponent(idDueno.trim())}`;
         const response = await fetch(fetchUrl, {
           method: "GET",
-          mode: "cors"
+          mode: "cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          }
         });
         if (!response.ok) {
           throw new Error(`Error de conexión al servidor: ${response.statusText}`);
@@ -129,7 +132,10 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
         const fetchUrl = `${appScriptUrl}?placa=${encodeURIComponent(car.placa)}&tipoCertificado=${tipo}`;
         const response = await fetch(fetchUrl, {
           method: "GET",
-          mode: "cors"
+          mode: "cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          }
         });
         if (!response.ok) {
           throw new Error("Error en la conexión de red.");
@@ -472,11 +478,28 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
             )}
           </div>
 
-          {/* Botón Descargar PDF */}
+          {/* Botón Descargar PDF / Alerta Vencido */}
           {isVencido ? (
-            <div className="w-full bg-slate-900/50 border border-red-500/20 text-red-400 p-4 rounded-2xl text-center flex items-center justify-center gap-2 no-print">
-              <Lock className="w-5 h-5 shrink-0 text-red-500/70" />
-              <span className="text-xs font-bold uppercase tracking-wider">Descarga Deshabilitada: Certificado Vencido</span>
+            <div className="p-5 rounded-2xl bg-red-950/40 border border-red-500/40 text-center space-y-4 shadow-lg shadow-red-900/10 no-print animate-pulse">
+              <div className="space-y-1">
+                <span className="text-xs font-black uppercase tracking-wide block text-red-400 font-bold">
+                  🔴 Certificación Vencida - Renovar Aquí para activar su Score
+                </span>
+                <p className="text-slate-300 leading-normal text-[11px]">
+                  El acceso a las opciones de descarga oficial, historial verificado y sincronización móvil ha sido deshabilitado.
+                </p>
+              </div>
+              <a
+                href={`https://wa.me/584120000000?text=${encodeURIComponent(
+                  `Hola AutoScore, deseo renovar el certificado digital de mi vehículo placa ${selectedCar?.placa} para activar mi Score Mecánico`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-extrabold text-xs py-3 px-4 rounded-xl shadow-lg shadow-red-500/20 hover:shadow-red-500/40 active:scale-[0.98] transition-all duration-200 border border-red-500/30 font-bold"
+                id={`btn-renew-pdf-view`}
+              >
+                Chatear para Renovar
+              </a>
             </div>
           ) : (
             <button
@@ -572,21 +595,39 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
               </p>
             </button>
 
-            <button
-              onClick={() => handleVerCertificado(selectedCar, "completo")}
-              className="w-full text-left bg-white/5 hover:bg-white/10 border border-amber-500/30 hover:border-amber-500/50 rounded-xl p-4 transition-all"
-            >
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-                  <span className="font-semibold text-amber-400 text-sm">Ver Certificado Completo VIP</span>
-                </div>
-                <span className="text-[10px] uppercase font-mono text-amber-500 font-bold">Premium</span>
+            {isVencido ? (
+              <div className="p-4 rounded-xl bg-red-950/40 border border-red-500/40 text-center space-y-3.5 no-print">
+                <p className="text-xs text-red-400 font-extrabold leading-normal">
+                  🔴 Certificación Vencida - Renovar Aquí para activar su Score
+                </p>
+                <a
+                  href={`https://wa.me/584120000000?text=${encodeURIComponent(
+                    `Hola AutoScore, deseo renovar el certificado digital de mi vehículo placa ${selectedCar?.placa} para activar mi Score Mecánico`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-extrabold text-xs py-2.5 px-4 rounded-xl shadow-lg shadow-red-500/10 active:scale-[0.98] transition-all border border-red-500/30"
+                >
+                  Contactar por WhatsApp
+                </a>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
-                Desglosa el Score, datos de homologación y la <strong>línea de tiempo cronológica completa</strong> de mantenimientos realizados por técnicos calificados con firma y taller verificado.
-              </p>
-            </button>
+            ) : (
+              <button
+                onClick={() => handleVerCertificado(selectedCar, "completo")}
+                className="w-full text-left bg-white/5 hover:bg-white/10 border border-amber-500/30 hover:border-amber-500/50 rounded-xl p-4 transition-all"
+              >
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="font-semibold text-amber-400 text-sm">Ver Certificado Completo VIP</span>
+                  </div>
+                  <span className="text-[10px] uppercase font-mono text-amber-500 font-bold">Premium</span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+                  Desglosa el Score, datos de homologación y la <strong>línea de tiempo cronológica completa</strong> de mantenimientos realizados por técnicos calificados con firma y taller verificado.
+                </p>
+              </button>
+            )}
           </div>
 
           <button
@@ -694,44 +735,59 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-3.5 border-t border-white/10">
-                    {/* Botón ver Opciones */}
-                    <button
-                      onClick={() => {
-                        setSelectedCar(car);
-                        setMostrarOpciones(true);
-                      }}
-                      className="w-full bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white border border-white/10 rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
-                    >
-                      <ClipboardList className="w-3.5 h-3.5" />
-                      Certificados
-                    </button>
+                  <div className="pt-3.5 border-t border-white/10">
+                    {car.estadoCertificado?.toUpperCase() === "VENCIDO" ? (
+                      <button
+                        onClick={() => {
+                          setSelectedCar(car);
+                          setMostrarOpciones(true);
+                        }}
+                        className="w-full bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white border border-white/10 rounded-xl py-2.5 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <ClipboardList className="w-3.5 h-3.5" />
+                        Ver Certificado Simple
+                      </button>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Botón ver Opciones */}
+                        <button
+                          onClick={() => {
+                            setSelectedCar(car);
+                            setMostrarOpciones(true);
+                          }}
+                          className="w-full bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white border border-white/10 rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <ClipboardList className="w-3.5 h-3.5" />
+                          Certificados
+                        </button>
 
-                    {/* Botón QR */}
-                    <button
-                      onClick={() => {
-                        setSelectedCar(car);
-                        setMostrarQR(true);
-                      }}
-                      className="w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 border border-amber-500/20 rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
-                    >
-                      <QrCode className="w-3.5 h-3.5" />
-                      Código QR
-                    </button>
+                        {/* Botón QR */}
+                        <button
+                          onClick={() => {
+                            setSelectedCar(car);
+                            setMostrarQR(true);
+                          }}
+                          className="w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 border border-amber-500/20 rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <QrCode className="w-3.5 h-3.5" />
+                          Código QR
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Botón de Renovación si está Vencido */}
                   {car.estadoCertificado?.toUpperCase() === "VENCIDO" && (
                     <a
                       href={`https://wa.me/584120000000?text=${encodeURIComponent(
-                        `Hola AutoScore, deseo renovar el certificado digital de mi vehículo placa ${car.placa} para actualizar mi Score Mecánico`
+                        `Hola AutoScore, deseo renovar el certificado digital de mi vehículo placa ${car.placa} para activar mi Score Mecánico`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-3.5 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-extrabold text-xs py-3 px-4 rounded-xl shadow-lg shadow-red-500/20 hover:shadow-red-500/40 active:scale-[0.98] transition-all duration-200 animate-pulse text-center border border-red-500/30"
+                      className="mt-3.5 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-extrabold text-xs py-3 px-4 rounded-xl shadow-lg shadow-red-500/20 hover:shadow-red-500/40 active:scale-[0.98] transition-all duration-200 animate-pulse text-center border border-red-500/30 font-bold"
                       id={`btn-renew-${car.placa}`}
                     >
-                      🔴 Certificado Vencido - Renovar Aquí
+                      🔴 Certificación Vencida - Renovar Aquí para activar su Score
                     </a>
                   )}
                 </div>

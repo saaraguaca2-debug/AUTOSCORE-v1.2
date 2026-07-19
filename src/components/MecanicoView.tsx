@@ -242,7 +242,7 @@ export default function MecanicoView({ useSimulado, appScriptUrl }: MecanicoView
           method: "POST",
           mode: "cors",
           headers: {
-            "Content-Type": "text/plain"
+            "Content-Type": "text/plain;charset=utf-8"
           },
           body: JSON.stringify(payload)
         });
