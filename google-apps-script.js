@@ -155,43 +155,18 @@ function doGet(e) {
           const headersH = historialData[0];
           const rowsH = historialData.slice(1);
           
-          // Obtener mecánicos para cruzar el teléfono y nombre
-          const sheetMecanicos = sheetApp.getSheetByName("Mecanicos");
-          const mecPhoneMap = {};
-          if (sheetMecanicos) {
-            const mecData = sheetMecanicos.getDataRange().getValues();
-            const headersM = mecData[0];
-            const rowsM = mecData.slice(1);
-            for (let i = 0; i < rowsM.length; i++) {
-              const row = rowsM[i];
-              const cod = getRowValue(row, headersM, "CodigoMecanico").trim();
-              const tel = getRowValue(row, headersM, "Telefono").trim();
-              const nom = getRowValue(row, headersM, "Nombre").trim();
-              const tal = getRowValue(row, headersM, "Taller").trim();
-              if (cod) {
-                mecPhoneMap[cod] = { telefono: tel, nombre: nom, taller: tal };
-              }
-            }
-          }
-          
           const timeline = [];
           for (let j = 0; j < rowsH.length; j++) {
             const rowH = rowsH[j];
             const rowHPlaca = getRowValue(rowH, headersH, "Placa").toUpperCase();
             if (rowHPlaca === placa) {
-              const codMec = getRowValue(rowH, headersH, "CodigoMecanico").trim();
-              const mecInfo = mecPhoneMap[codMec] || { telefono: "", nombre: "", taller: "" };
-              const tName = getRowValue(rowH, headersH, "Taller", mecInfo.taller || "Taller Independiente");
               timeline.push({
                 idHistorial: getRowValue(rowH, headersH, "IdHistorial"),
                 fecha: getRowValue(rowH, headersH, "Fecha"),
                 kilometraje: Number(getRowValue(rowH, headersH, "Kilometraje", "0")),
-                codigoMecanico: codMec,
-                nombreMecanico: mecInfo.nombre || "Técnico AutoScore",
-                taller: tName,
-                nombreTaller: tName,
-                trabajoRealizado: getRowValue(rowH, headersH, "TrabajoRealizado"),
-                telefono: mecInfo.telefono || ""
+                codigoMecanico: getRowValue(rowH, headersH, "CodigoMecanico"),
+                taller: getRowValue(rowH, headersH, "Taller", "Taller Independiente"),
+                trabajoRealizado: getRowValue(rowH, headersH, "TrabajoRealizado")
               });
             }
           }

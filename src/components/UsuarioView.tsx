@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { 
   User, Car, Shield, QrCode, ClipboardList, Lock, Sparkles, ChevronLeft, 
   Search, Calendar, Gauge, Award, Wrench, RefreshCw, AlertCircle, HelpCircle, CheckCircle,
-  Download, X
+  Download
 } from "lucide-react";
 import { Vehiculo, HistorialRow } from "../types";
 import { simularGetPorDueno, simularGetCertificado } from "../mockData";
@@ -29,7 +29,6 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
   // Historial cargado del carro (solo para certificado completo)
   const [historial, setHistorial] = useState<HistorialRow[]>([]);
   const [loadingCert, setLoadingCert] = useState(false);
-  const [mecanicoParaModal, setMecanicoParaModal] = useState<HistorialRow | null>(null);
 
   const isVencido = selectedCar ? (selectedCar.estadoCertificado || "Activo").toLowerCase() !== "activo" : false;
 
@@ -268,19 +267,13 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
                 {row.trabajoRealizado}
               </p>
 
-              <div className="pt-2.5 border-t border-white/5 text-[10px] text-slate-500 flex flex-wrap justify-between items-center gap-2">
+              <div className="pt-2.5 border-t border-white/5 text-[10px] text-slate-500 flex flex-wrap justify-between items-center gap-1.5">
                 <span className="font-medium text-slate-400">
                   Taller: <strong className="text-slate-300 font-semibold">{row.taller}</strong>
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setMecanicoParaModal(row)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 active:scale-95 border border-emerald-500/30 transition-all font-mono font-bold cursor-pointer"
-                  title="Ver Perfil del Técnico Verificado"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                  👨‍🔧 Firma: #{row.codigoMecanico}
-                </button>
+                <span className="font-mono bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
+                  Firma: #{row.codigoMecanico}
+                </span>
               </div>
             </div>
           </div>
@@ -808,65 +801,6 @@ export default function UsuarioView({ useSimulado, appScriptUrl }: UsuarioViewPr
   return (
     <div className="w-full max-w-md mx-auto px-4 py-6 animate-fade-in text-slate-100">
       {renderContent()}
-
-      {/* Modal flotante de Técnico Autorizado */}
-      {mecanicoParaModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in no-print">
-          <div className="relative w-full max-w-sm bg-slate-950 border border-emerald-500/30 rounded-3xl p-6 shadow-2xl shadow-emerald-500/10 text-center space-y-5 animate-scale-up">
-            {/* Close Button */}
-            <button
-              onClick={() => setMecanicoParaModal(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full p-1.5 transition-all cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            {/* Header Icon */}
-            <div className="mx-auto w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl animate-bounce">
-              👨‍🔧
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 inline-block font-mono">
-                Técnico Autorizado AutoScore
-              </span>
-              <h3 className="text-lg font-bold text-white font-display pt-2">
-                {mecanicoParaModal.nombreMecanico || `Especialista #${mecanicoParaModal.codigoMecanico}`}
-              </h3>
-              <p className="text-xs text-slate-400">
-                Taller: <strong className="text-slate-200 font-semibold">{mecanicoParaModal.taller}</strong>
-              </p>
-              <p className="text-[10px] text-slate-500 font-mono">
-                Código Registro: #{mecanicoParaModal.codigoMecanico}
-              </p>
-            </div>
-
-            {/* WhatsApp Button */}
-            <div className="pt-2">
-              {mecanicoParaModal.telefono ? (
-                <a
-                  href={`https://wa.me/${mecanicoParaModal.telefono.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                    `Hola, vi tu firma en el historial verificado de AutoScore del vehículo placa ${selectedCar?.placa}. Quería hacerte una consulta sobre el trabajo de ${mecanicoParaModal.trabajoRealizado} que le hiciste en fecha ${mecanicoParaModal.fecha ? mecanicoParaModal.fecha.split(" ")[0] : ""}.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-extrabold text-xs py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition-all border border-emerald-500/30 font-bold"
-                >
-                  <span>💬 Consultar al Mecánico por WhatsApp</span>
-                </a>
-              ) : (
-                <div className="p-3 bg-slate-900/50 rounded-xl border border-white/5 text-[11px] text-amber-400/80">
-                  ⚠️ Teléfono no configurado para este técnico en la base de datos de Google Sheets.
-                </div>
-              )}
-            </div>
-
-            <div className="text-[10px] text-slate-500 leading-normal">
-              Cada mantenimiento registrado está protegido por firmas digitales de talleres verificados por la red nacional AutoScore.
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
